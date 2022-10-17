@@ -12,6 +12,10 @@ import crnpy
 from crnpy import tools
 ```
 
+# To run the tests
+1) cd into the folder with setup.py
+2) run the command 'python setup.py pytest'
+
 # Future Work
 1) I might upload to the online Pip repo so you can just pip install crnpy
 2) To build a determinstic and stochastic sublibrary  
