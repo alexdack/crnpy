@@ -3,7 +3,7 @@ from crnpy import stochastic
 import random;
 
 def test_crn_state_rates_generator():
-    random.seed(10)
+    np.random.seed(10)
     start_state = np.array([20]);
     reactant_matrix = np.array([[0,1]]);
     product_matrix = np.array([[1,0],]);
@@ -15,7 +15,7 @@ def test_crn_state_rates_generator():
     assert output == result
 
 def test_gillespie_simulation():
-    random.seed(10)
+    np.random.seed(10)
     start_state = np.array([20]);
     reactant_matrix = np.array([[0,1]]);
     product_matrix = np.array([[1,0],]);
