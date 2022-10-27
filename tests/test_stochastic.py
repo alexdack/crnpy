@@ -1,6 +1,6 @@
 import numpy as np;
 from crnpy import stochastic
-import random;
+import scipy.special as spc
 
 def test_crn_state_rates_generator():
     np.random.seed(10)
@@ -52,6 +52,25 @@ def test_gillespie_simulation_prod_decay_final_only():
     states = output[1] == result[1];
     assert time.all()
     assert states.all()
+
+def test_compute_stationary_distribution():
+    np.random.seed(5);
+    steady_state = np.array([10]);
+    reactant_matrix = np.array([[1, 0],[0, 1]]);
+    product_matrix = np.array([[0, 1],[1, 0],]);
+    reaction_rates = np.array([0.1, 1]);
+    n_max = 23;
+    null_index = 1;
+    number_of_trajectories = 500;
+    n,p = stochastic.compute_stationary_distribution(steady_state, n_max, number_of_trajectories, reactant_matrix, product_matrix, reaction_rates, null_index);
+
+    pCME = 1/spc.factorial(n)*pow(10,n)*np.exp(-10);
+
+    test_range = n == np.arange(0,n_max,1);
+    assert test_range.all();
+    test_p = abs(np.transpose(p[:,0])- pCME) < 0.02;
+    assert test_p.all();
+
 
 def test_find_smallest_time_between_events():
     t1 = np.array([0, 1, 2 ,3, 4]);

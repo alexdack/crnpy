@@ -42,19 +42,15 @@ def gillespie_simulation( tRun, start_state, reactant_matrix, product_matrix, re
 
 
     while t < tRun:
-        total_transition_rate = 0;
         u, v = crn_state_rates_generator(current_state, reactant_matrix, product_matrix, reaction_rates, null_index);
         k = np.sum(v);
         r = np.random.rand(2,1);
         unbiased_number_time_step = r[0];
         dt = - np.log(unbiased_number_time_step ) / k;
-
         unbiased_number_state_change = r[1];
         rate_comparison = unbiased_number_state_change * k;
         i_new = 0;
-
         s = 0;
-
         for l in range(v.size):
             s = s + v[l];
             if s > rate_comparison:
@@ -67,7 +63,7 @@ def gillespie_simulation( tRun, start_state, reactant_matrix, product_matrix, re
             state_arr = np.append(state_arr, np.array([i_new]),axis=0);
     if final_only:
         time_arr = t;
-        state_arr = np.array([i_new]);
+        state_arr = np.array([current_state]);
 
     return (time_arr, state_arr)
 
@@ -78,6 +74,18 @@ def find_smallest_time_between_events(list_of_trajectories):
     result = np.min( list( map(deltas, list_of_trajectories) ) );
 
     return result
+
+def compute_stationary_distribution(steady_state, n_max, number_of_trajectories, reactant_matrix, product_matrix, reaction_rates, null_index):
+    p = np.zeros([n_max, steady_state.shape[0] ]);
+    for i in range(0, number_of_trajectories):
+        time, trajectory = gillespie_simulation( i, steady_state, reactant_matrix, product_matrix, reaction_rates, null_index , final_only=True);
+        for state_index in range(steady_state.shape[0]):
+            final_value = trajectory[state_index]
+            if final_value >= 0 and final_value < n_max:
+                p[int(final_value), state_index] = p[int(final_value), state_index] + 1;
+    p = p/number_of_trajectories;
+    n = np.arange(0,n_max,1);
+    return (n,p)
 
 def find_smallest_final_event_time(list_of_trajectories):
 
