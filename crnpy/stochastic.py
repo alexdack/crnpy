@@ -46,7 +46,7 @@ def gillespie_simulation( tRun, start_state, reactant_matrix, product_matrix, re
         u, v = crn_state_rates_generator(current_state, reactant_matrix, product_matrix, reaction_rates, null_index);
         k = np.sum(v);
         unbiased_number_time_step = random.random();
-        dt = - np.log(1 - unbiased_number_time_step ) / k;
+        dt = - np.log(unbiased_number_time_step ) / k;
 
         unbiased_number_state_change = random.random();
         rate_comparison = unbiased_number_state_change * k;
