@@ -15,7 +15,7 @@ def crn_state_rates_generator(current_state, reactant_matrix, product_matrix, re
     scaled_rates = np.zeros(reaction_rates.shape)
 
     for i in range(reaction_rates.size):
-        scaled_rates[i] = reaction_rates[i] * tools.compute_stoichiometry_terms( reactant_matrix[i,:], current_state_w_null, null_index)
+        scaled_rates[i] = reaction_rates[i] * tools.compute_stoichiometry_terms_stochastic_propensity( reactant_matrix[i,:], current_state_w_null, null_index)
 
     nonnegative_rates_mask = scaled_rates > 0;
 

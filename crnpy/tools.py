@@ -60,3 +60,16 @@ def compute_stoichiometry_terms_text( exponents, species_names, null_index):
             else:
                 result = result + '*pow(' + species_names[species_index] + ', ' + str(exponents[species_index]) + ')';
     return result;
+
+def compute_stoichiometry_terms_stochastic_propensity( exponents, species_vector, null_index):
+    result = 1;
+    for species_index in range(species_vector.size):
+        if species_index == null_index:
+            result = result;
+        else:
+            val = species_vector[species_index];
+            ex = exponents[species_index];
+            ran = np.arange(val-ex+1, val+1 , 1);
+            res = np.product(ran);
+            result = result*res;
+    return result;
