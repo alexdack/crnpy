@@ -92,7 +92,10 @@ def compute_stationary_distribution_single_traj(steady_state, n_max, tFinal, tim
     time_arr, state_arr = resample_to_fixed_step(time, trajectory, timeStep );
     number_of_savings  = time_arr.shape[0];
     for state_index in range(steady_state.shape[0]):
-        count_arr = np.bincount(state_arr[:,state_index]);
+        vec = state_arr[:,state_index].astype(int)
+        count_arr = np.zeros(n_max);
+        bin_count = np.bincount(vec);
+        count_arr[0:bin_count.shape[0]] = np.bincount(vec);
         p_state = count_arr / number_of_savings;
         p[:,state_index] = p_state[0:n_max];
     n = np.arange(0,n_max,1);
