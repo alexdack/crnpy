@@ -14,21 +14,39 @@ def test_crn_state_rates_generator():
     result =  (np.array([[21]]), np.array([1.]));
     assert output == result
 
-def test_gillespie_simulation():
-    np.random.seed(10)
-    start_state = np.array([20]);
-    reactant_matrix = np.array([[0,1]]);
-    product_matrix = np.array([[1,0],]);
-    reaction_rates = np.array([1]);
-    null_index = 1;
+def test_gillespie_simulation_prod_decay_CRN():
+    np.random.seed(5);
+    start_state = np.array([0]);
+    reactant_matrix = np.array([[1, 0],[0, 1]]);
+    product_matrix = np.array([[0, 1],[1, 0],]);
+    reaction_rates = np.array([0.1, 1]);
     tRun = 3;
+    null_index = 1;
 
     output = stochastic.gillespie_simulation( tRun, start_state, reactant_matrix, product_matrix, reaction_rates, null_index )
-    result =  (np.array([0.        , 0.84723725, 1.71020359, 3.38856965]),
-               np.array([[20],
-                         [21],
-                         [22],
-                         [23]]))
+    result =  (np.array([0.        , 1.50510866, 2.93819424, 3.53535893]),
+               np.array([[0],
+                         [1],
+                         [2],
+                         [3]]))
+
+    time = abs(output[0] - result[0]) < 0.0000001;
+    states = output[1] == result[1];
+    assert time.all()
+    assert states.all()
+
+def test_gillespie_simulation_prod_decay_final_only():
+    np.random.seed(5);
+    start_state = np.array([0]);
+    reactant_matrix = np.array([[1, 0],[0, 1]]);
+    product_matrix = np.array([[0, 1],[1, 0],]);
+    reaction_rates = np.array([0.1, 1]);
+    tRun = 3;
+    null_index = 1;
+
+    output = stochastic.gillespie_simulation( tRun, start_state, reactant_matrix, product_matrix, reaction_rates, null_index, final_only=True)
+    result =  (3.53535893,
+               np.array([[3]]));
 
     time = abs(output[0] - result[0]) < 0.0000001;
     states = output[1] == result[1];

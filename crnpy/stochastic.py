@@ -32,7 +32,7 @@ def crn_state_rates_generator(current_state, reactant_matrix, product_matrix, re
     return (possible_states, possible_rates)
 
 
-def gillespie_simulation( tRun, start_state, reactant_matrix, product_matrix, reaction_rates, null_index ):
+def gillespie_simulation( tRun, start_state, reactant_matrix, product_matrix, reaction_rates, null_index, final_only=False ):
 
     t = 0;
     current_state = start_state;
@@ -62,8 +62,12 @@ def gillespie_simulation( tRun, start_state, reactant_matrix, product_matrix, re
                 break;
         current_state = i_new;
         t = t + dt;
-        time_arr = np.append(time_arr, t);
-        state_arr = np.append(state_arr, np.array([i_new]),axis=0);
+        if not final_only:
+            time_arr = np.append(time_arr, t);
+            state_arr = np.append(state_arr, np.array([i_new]),axis=0);
+    if final_only:
+        time_arr = t;
+        state_arr = np.array([i_new]);
 
     return (time_arr, state_arr)
 
