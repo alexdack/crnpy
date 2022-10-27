@@ -199,3 +199,138 @@ def test_resample_to_fixed_step():
     assert test_state.all();
     assert test_time.all();
 
+def test_crn_state_rates_generator_1():
+    # 1) kv: null -> A, alpha = kv
+    np.random.seed(5)
+    kv = 1;
+    A0 = 30;
+    reactant_matrix = np.array([[0, 1]]);
+    product_matrix = np.array([[1, 0]]);
+    null_index = 1;
+    start_state = np.array([A0]);
+    reaction_rates = np.array([kv]);
+
+    state, propensity = stochastic.crn_state_rates_generator(start_state, reactant_matrix, product_matrix, reaction_rates, null_index);
+
+    assert(propensity[0] == kv)
+    assert(state[0][0] == A0+1)
+
+def test_crn_state_rates_generator_2():
+    # 2) k: A -> null, alpha = A*k
+    np.random.seed(5)
+    k = 1;
+    A0 = 30;
+    reactant_matrix = np.array([[1, 0]]);
+    product_matrix = np.array([[0, 1]]);
+    null_index = 1;
+    start_state = np.array([A0]);
+    reaction_rates = np.array([k]);
+
+    state, propensity = stochastic.crn_state_rates_generator(start_state, reactant_matrix, product_matrix, reaction_rates, null_index);
+
+    assert(propensity[0] == k*A0)
+    assert(state[0][0] == A0-1)
+
+def test_crn_state_rates_generator_3():
+    # 3) kbyv: A + B -> null, alpha = A*B*kbyv
+    np.random.seed(5)
+    kbyv = 1;
+    A0 = 30;
+    B0 = 10;
+    reactant_matrix = np.array([[1, 1, 0]]);
+    product_matrix = np.array([[0, 0, 1]]);
+    null_index = 2;
+    start_state = np.array([A0, B0 ]);
+    reaction_rates = np.array([kbyv]);
+
+    state, propensity = stochastic.crn_state_rates_generator(start_state, reactant_matrix, product_matrix, reaction_rates, null_index);
+
+    assert(propensity[0] == kbyv*A0*B0);
+    assert(state[0][0] == A0-1);
+    assert(state[0][1] == B0-1);
+
+def test_crn_state_rates_generator_4():
+    # 4) kbyv: A + A -> null, alpha = A*(A-1)* kbyv
+    np.random.seed(5)
+    kbyv = 1;
+    A0 = 30;
+    reactant_matrix = np.array([[2, 0]]);
+    product_matrix = np.array([[0, 1]]);
+    null_index = 1;
+    start_state = np.array([A0 ]);
+    reaction_rates = np.array([kbyv]);
+
+    state, propensity = stochastic.crn_state_rates_generator(start_state, reactant_matrix, product_matrix, reaction_rates, null_index);
+
+    assert(propensity[0] == kbyv*A0*(A0-1));
+    assert(state[0][0] == A0-2);
+
+def test_crn_state_rates_generator_5():
+    # 5) kbyv2: A + B + C -> null A*B*C*kbyv2
+    np.random.seed(5)
+    kbyv2 = 1;
+    A0 = 30;
+    B0 = 20;
+    C0 = 10;
+    reactant_matrix = np.array([[1, 1, 1, 0]]);
+    product_matrix = np.array([[0, 0, 0, 1]]);
+    null_index = 3;
+    start_state = np.array([A0, B0, C0]);
+    reaction_rates = np.array([kbyv2]);
+
+    state, propensity = stochastic.crn_state_rates_generator(start_state, reactant_matrix, product_matrix, reaction_rates, null_index);
+
+    assert(propensity[0] == kbyv2*A0*B0*C0)
+    assert(state[0][0] == A0-1)
+    assert(state[0][1] == B0-1)
+    assert(state[0][2] == C0-1)
+
+def test_crn_state_rates_generator_6():
+    # 6) kbyv2: 2A + B -> null, A*(A-1)*B*kbyv2
+    np.random.seed(5)
+    kbyv2 = 1;
+    A0 = 30;
+    B0 = 20;
+    reactant_matrix = np.array([[2, 1, 0]]);
+    product_matrix = np.array([[0, 0, 1]]);
+    null_index = 2;
+    start_state = np.array([A0, B0]);
+    reaction_rates = np.array([kbyv2]);
+
+    state, propensity = stochastic.crn_state_rates_generator(start_state, reactant_matrix, product_matrix, reaction_rates, null_index);
+
+    assert(propensity[0] == kbyv2*A0*(A0-1)*B0)
+    assert(state[0][0] == A0-2)
+    assert(state[0][1] == B0-1)
+
+def test_crn_state_rates_generator_7():
+    # 7) kbyv2: 3A -> null, A*(A-1)*(A-2)*kbyv2
+    np.random.seed(5)
+    kbyv2 = 1;
+    A0 = 30;
+    reactant_matrix = np.array([[3, 0]]);
+    product_matrix = np.array([[0, 1]]);
+    null_index = 1;
+    start_state = np.array([A0]);
+    reaction_rates = np.array([kbyv2]);
+
+    state, propensity = stochastic.crn_state_rates_generator(start_state, reactant_matrix, product_matrix, reaction_rates, null_index);
+
+    assert(propensity[0] == kbyv2*A0*(A0-1)*(A0-2))
+    assert(state[0][0] == A0-3)
+
+def test_crn_state_rates_generator_8():
+    # 8) kbyv2: 3A -> A, A*(A-1)*(A-2)*kbyv2
+    np.random.seed(5)
+    kbyv2 = 1;
+    A0 = 30;
+    reactant_matrix = np.array([[3, 0]]);
+    product_matrix = np.array([[1, 0]]);
+    null_index = 1;
+    start_state = np.array([A0]);
+    reaction_rates = np.array([kbyv2]);
+
+    state, propensity = stochastic.crn_state_rates_generator(start_state, reactant_matrix, product_matrix, reaction_rates, null_index);
+
+    assert(propensity[0] == kbyv2*A0*(A0-1)*(A0-2))
+    assert(state[0][0] == A0-2)

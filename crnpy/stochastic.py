@@ -27,9 +27,9 @@ def crn_state_rates_generator(current_state, reactant_matrix, product_matrix, re
     possible_states_mask = np.logical_and(nonnegative_states_mask, nonnegative_rates_mask);
 
     possible_states = future_states[possible_states_mask];
-    possible_rates = scaled_rates[possible_states_mask];
+    propensity_arr = scaled_rates[possible_states_mask];
 
-    return (possible_states, possible_rates)
+    return (possible_states, propensity_arr )
 
 
 def gillespie_simulation( tRun, start_state, reactant_matrix, product_matrix, reaction_rates, null_index, final_only=False ):
