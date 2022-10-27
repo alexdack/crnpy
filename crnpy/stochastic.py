@@ -88,7 +88,7 @@ def compute_stationary_distribution(steady_state, n_max, number_of_trajectories,
 
 def compute_stationary_distribution_single_traj(steady_state, n_max, tFinal, timeStep, reactant_matrix, product_matrix, reaction_rates, null_index):
     p = np.zeros([n_max, steady_state.shape[0] ]);
-    time, trajectory = gillespie_simulation( tFinal, steady_state, reactant_matrix, product_matrix, reaction_rates, null_index , final_only=True);
+    time, trajectory = gillespie_simulation( tFinal, steady_state, reactant_matrix, product_matrix, reaction_rates, null_index );
     time_arr, state_arr = resample_to_fixed_step(time, trajectory, timeStep );
     number_of_savings  = time_arr.shape[0];
     for state_index in range(steady_state.shape[0]):
