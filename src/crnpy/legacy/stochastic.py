@@ -81,7 +81,8 @@ def compute_stationary_distribution(steady_state, n_max, number_of_trajectories,
         for state_index in range(steady_state.shape[0]):
             final_value = trajectory[state_index]
             if final_value >= 0 and final_value < n_max:
-                p[int(final_value), state_index] = p[int(final_value.item()), state_index] + 1;
+                _final_value = int(final_value.item())
+                p[_final_value, state_index] = p[_final_value, state_index] + 1;
     p = p/number_of_trajectories;
     n = np.arange(0,n_max,1);
     return (n,p)
