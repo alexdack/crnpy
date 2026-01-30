@@ -1,5 +1,6 @@
 import numpy as np
 import csv
+from scipy.integrate import solve_ivp
 
 def open_csv(file):
     # Function to open .csv files and extract them for plotting
@@ -99,3 +100,37 @@ def stoch_mat_to_mass_action(t, x, reaction_rates, react_stoch, stoch_mat):
     fluxes_with_rates = np.asarray(reaction_rates)*fluxes
     mass_action = np.matmul(np.transpose(stoch_mat), fluxes_with_rates)
     return mass_action
+
+def new_initial_conditions(old_inits, species, dict):
+    new_inits = []
+    id_dict = {}
+    for s in np.arange(0, len(species), 1):
+        if species[s] in dict.keys():
+            new_inits += [dict[species[s]]]
+        else:
+            new_inits += [old_inits[s]]
+        id_dict[species[s]] = s
+    return new_inits, id_dict
+
+def simulate_trajectory(crn_file, t_length, t_step, init_dict={}):
+    # crn_file - string to .txt file in the CRN format
+    # t_length - float for time period of trajectory
+    # init_dict - a dict that overwrties the initial concentrations {'X_1':2, 'X_2': 2}
+
+    # reads the previously saved chemical reaction network file returning the key stoichiometry and kinetic matrices 
+    species, reaction_rates, react_stoch, prod_stoch, stoch_mat, number_species, number_reactions, initial_concs = read_crn_txt(crn_file)
+
+    # groups stoichiometry matrices for use in ODE simulation 
+    args_crn = (reaction_rates, react_stoch, stoch_mat,)
+
+    # helper functions new_initial_conditions and stoch_mat_to_mass_action are used to simulate general CRNs
+    if len(init_dict.keys()) > 0:
+        initial_concs, id_dict = new_initial_conditions(initial_concs, species, init_dict)
+
+    # time points to view the trajectory
+    _t_eval =  np.arange(0, t_length, t_step)
+
+    sol_crn = solve_ivp(stoch_mat_to_mass_action, [0, t_length], initial_concs, args=args_crn, t_eval=_t_eval, rtol=10e-8)
+
+    return sol_crn
+
