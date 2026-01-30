@@ -86,3 +86,16 @@ def read_crn_txt(filename):
     _initial_concs_vec = initial_concs_vec[s_idx]
 
     return (_species, reaction_rates, _react_stoch, _prod_stoch, _stoch_mat, number_species, number_reactions, _initial_concs_vec )
+
+def stoch_mat_to_mass_action(t, x, reaction_rates, react_stoch, stoch_mat):
+    # Function that converts a stoichiometry matrix into a reaction-rate equation 
+    # reaction_rates - NumPy array of reaction rates (num_of_reactions, )
+    # react_stoch - NumPy array of positive ints (num_of_reactions, num_of_species )
+    # stoch_mat - NumPy array of ints (num_of_reactions, num_of_species )
+    # t - time value. Ignored as mass-action kinetics produce autonomous ODEs. 
+    # x - current concentrations of CRN. 
+    conc_to_power_of_react = np.power(x, react_stoch);
+    fluxes = np.prod(conc_to_power_of_react, axis=1)
+    fluxes_with_rates = np.asarray(reaction_rates)*fluxes
+    mass_action = np.matmul(np.transpose(stoch_mat), fluxes_with_rates)
+    return mass_action

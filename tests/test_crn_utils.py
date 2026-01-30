@@ -48,6 +48,19 @@ def test_read_crn_txt(test_crn):
     assert number_reactions == 2
     np.testing.assert_array_equal(initial_concs_vec, np.array([9.0, 10.6, 11.0]))
 
+def test_stoch_mat_to_mass_action():
+    _t = 0
+    _x = np.array([9.0, 10.6, 11.0])
+    _reaction_rates = np.array([5.7, 10.3])
+    _react_stoch = np.array([[1,0,1], [0,1,1]])
+    _stoch_mat = np.array([[-1,0,1], [0,-1,0]])
+    mass_action = utils.stoch_mat_to_mass_action(_t, _x, _reaction_rates, _react_stoch, _stoch_mat)
+
+    _dx1 = -9.0*11.0*5.7
+    _dx2 = -10.3*10.6*11.0
+    _dy1 = 9.0*11.0*5.7
+
+    np.testing.assert_array_equal(mass_action, np.array([_dx1, _dx2, _dy1]))
 
 
 
