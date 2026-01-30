@@ -1,4 +1,4 @@
-import numpy as np;
+import numpy as np
 from crnpy.legacy import stochastic
 import scipy.special as spc
 

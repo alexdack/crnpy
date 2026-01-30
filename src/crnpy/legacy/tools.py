@@ -70,6 +70,6 @@ def compute_stoichiometry_terms_stochastic_propensity( exponents, species_vector
             val = species_vector[species_index];
             ex = exponents[species_index];
             ran = np.arange(val-ex+1, val+1 , 1);
-            res = np.product(ran);
+            res = np.prod(ran);
             result = result*res;
     return result;
