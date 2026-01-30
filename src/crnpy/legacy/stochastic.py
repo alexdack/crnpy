@@ -1,7 +1,7 @@
-import numpy as np;
-import math;
-from crnpy import tools;
-from scipy.interpolate import interp1d;
+import numpy as np
+import math
+from crnpy import tools
+from scipy.interpolate import interp1d
 
 def crn_state_rates_generator(current_state, reactant_matrix, product_matrix, reaction_rates, null_index):
     # current_state is np.array of molecule numbers for species

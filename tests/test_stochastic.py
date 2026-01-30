@@ -1,5 +1,5 @@
 import numpy as np;
-from crnpy import stochastic
+from crnpy.legacy import stochastic
 import scipy.special as spc
 
 def test_crn_state_rates_generator():
