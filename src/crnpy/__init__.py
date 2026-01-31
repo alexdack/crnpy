@@ -1,1 +1,3 @@
-__all__ = ["legacy", "crn"]
+from .api import create_crn
+
+__all__ = ["legacy", "crn", "create_crn"]
