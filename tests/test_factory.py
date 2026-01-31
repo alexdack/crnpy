@@ -51,3 +51,4 @@ def test_create_crn_from_file(test_crn):
     np.testing.assert_array_equal(crn.number_of_species, 3)
     np.testing.assert_array_equal(crn.number_of_reactions, 2)
     np.testing.assert_array_equal(crn.stoichiometry_matrix, np.array([[-1,0,1], [0,-1,0]])) 
+

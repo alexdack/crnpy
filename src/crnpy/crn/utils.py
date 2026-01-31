@@ -1,6 +1,7 @@
 import numpy as np
 import csv
 from scipy.integrate import solve_ivp
+from typing import Sequence
 
 def open_csv(file):
     # Function to open .csv files and extract them for plotting
@@ -134,3 +135,31 @@ def simulate_trajectory(crn_file, t_length, t_step, init_dict={}):
 
     return sol_crn
 
+def convert_arrays_to_crn_text(species: Sequence[str], reaction_rates: Sequence[float], reaction_stoichiometry: Sequence[int], product_stoichiometry: Sequence[int], initial_concentrations: Sequence[float] ):
+    
+    s = '#'
+
+    for s_id, species_str in enumerate(species):
+        s+= species_str +'='+str(initial_concentrations[s_id])+','
+    
+    s = s[:-1]
+    s += '\n'
+
+    for r_id, rate in enumerate(reaction_rates):
+    # Build reactant string
+        reactants_list = []
+        product_list = []
+        for s_id, species_str in enumerate(species):
+            stoichiometry_react = reaction_stoichiometry[r_id, s_id]
+            stoichiometry_product = product_stoichiometry[r_id, s_id]
+            for _ in range(stoichiometry_react):
+                reactants_list.append(species_str)
+            for _ in range(stoichiometry_product):
+                product_list.append(species_str)
+        
+        reactants_str = " + ".join(reactants_list) if reactants_list else "0"
+        product_str = " + ".join(product_list) if product_list else "0"
+
+        s+= reactants_str + '->'+product_str+','+str(rate) +'\n'
+
+    return s
