@@ -1,4 +1,11 @@
 from .crn.crn_class import CRN
 
-def create_crn(species, reaction_rates, reaction_stoichiometry, product_stoichiometry, *, initial_concentrations = None):
-    return CRN(species, reaction_rates, reaction_stoichiometry, product_stoichiometry, initial_concentrations =initial_concentrations)
+def create_crn(*, from_arrays=None, from_file=None, **kwargs):
+    if from_arrays is not None:
+        return CRN.from_arrays(**from_arrays)
+    
+    if from_file is not None:
+        return CRN.from_file(**from_file)
+    
+    raise ValueError("Must specify a construction method")
+    

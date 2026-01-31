@@ -1,5 +1,6 @@
 from typing import Sequence, Optional
 import numpy as np
+from .utils import read_crn_txt
 
 class CRN:
     def __init__(self, species: Sequence[str], 
@@ -41,3 +42,18 @@ class CRN:
             self.initial_concentrations = np.zeros(species.shape)
 
         self.stoichiometry_matrix =  product_stoichiometry - reaction_stoichiometry
+
+    @classmethod
+    def from_arrays(cls, species: Sequence[str], 
+                reaction_rates: Sequence[float], 
+                reaction_stoichiometry: Sequence[int], 
+                product_stoichiometry: Sequence[int],
+                *, 
+                initial_concentrations: Optional[Sequence[float]] = None):
+        return cls(species, reaction_rates, reaction_stoichiometry, product_stoichiometry, initial_concentrations =initial_concentrations)
+    
+    @classmethod
+    def from_file(cls, filename):
+        species, reaction_rates, react_stoch, prod_stoch, stoch_mat, number_species, number_reactions, initial_concs_vec = read_crn_txt(filename)
+        return cls(np.asarray(species), np.asarray(reaction_rates), react_stoch, prod_stoch, initial_concentrations =initial_concs_vec)
+        
