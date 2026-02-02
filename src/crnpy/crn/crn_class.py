@@ -57,6 +57,18 @@ class CRN:
         species, reaction_rates, react_stoch, prod_stoch, stoch_mat, number_species, number_reactions, initial_concs_vec = read_crn_txt(filename)
         return cls(np.asarray(species), np.asarray(reaction_rates), react_stoch, prod_stoch, initial_concentrations =initial_concs_vec)
     
+    @classmethod
+    def from_random(cls, number_of_species: int, number_of_reactions: int):
+
+        species = ['S_'+ str(_+1) for _ in range(number_of_species)]
+        reaction_rates = np.random.lognormal(size=(number_of_reactions,))
+        initial_concs_vec = np.random.lognormal(size=(number_of_species,))
+        react_stoch = np.random.randint(0, 2, size=(number_of_reactions, number_of_species))
+        prod_stoch = np.random.randint(0, 2, size=(number_of_reactions, number_of_species))
+
+        return cls(np.asarray(species), np.asarray(reaction_rates), react_stoch, prod_stoch, initial_concentrations =initial_concs_vec)
+
+    
     def __str__(self):
         return convert_arrays_to_crn_text(self.species, self.reaction_rates, self.reaction_stoichiometry, self.product_stoichiometry, self.initial_concentrations)
     
