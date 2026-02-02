@@ -45,6 +45,44 @@ def crn_obj_same():
 def crn_text():
     return "#X_1=9.0,X_2=10.6,Y_1=11.0\nX_1 + Y_1->Y_1 + Y_1,5.7\nX_2 + Y_1->Y_1,10.3\n"
 
+@pytest.fixture
+def crn_single():
+    species =  np.array(['X_1'])
+    reaction_rates = np.array([1])
+    react_stoch = np.array([[1]])
+    prod_stoch = np.array([[0]])
+    inits = np.array([10.0])
+
+    _from_arrays = {
+        "species": species,
+        "reaction_rates": reaction_rates,
+        "reaction_stoichiometry": react_stoch,
+        "product_stoichiometry":prod_stoch,
+        "initial_concentrations": inits
+    }
+
+    crn = crnpy.create_crn(from_arrays=_from_arrays)
+    return crn
+
+@pytest.fixture
+def crn_double():
+    species =  np.array(['X_1'])
+    reaction_rates = np.array([0.5, 0.5])
+    react_stoch = np.array([[1], [1]])
+    prod_stoch = np.array([[0], [0]])
+    inits = np.array([10.0])
+
+    _from_arrays = {
+        "species": species,
+        "reaction_rates": reaction_rates,
+        "reaction_stoichiometry": react_stoch,
+        "product_stoichiometry":prod_stoch,
+        "initial_concentrations": inits
+    }
+
+    crn = crnpy.create_crn(from_arrays=_from_arrays)
+    return crn
+
 def test_crn_repr(crn_obj, crn_text):
     rep = repr(crn_obj)
     assert crn_text == rep
@@ -69,3 +107,21 @@ def test_integrate(crn_obj):
     np.testing.assert_array_equal(sol_crn.t, np.array([0, 0.0025, 0.005, 0.0075]))
     np.testing.assert_allclose(sol_crn.y, np.array([[9.,  7.618279,  6.326681,  5.162753], [10.6,  7.843389,  5.606759,  3.882952], [11., 12.381721, 13.673319, 14.837247]]), rtol=1e-4)
 
+def test_distance_from_same(crn_obj):
+    _t_length = 0.01
+    _t_step = 0.0025
+    res = crn_obj.distance_from(crn_obj, np.asarray(['X_1', 'X_2']), _t_length, _t_step)
+    assert res < 1e-9
+
+def test_distance_from_net_reactions(crn_single, crn_double):
+    _t_length = 0.1
+    _t_step = 0.0025
+    res = crn_single.distance_from(crn_double, np.asarray(['X_1']), _t_length, _t_step)
+    assert res < 1e-9
+
+def test_distance_from_far(crn_single, crn_obj):
+    _t_length = 0.1
+    _t_step = 0.0025
+    res = crn_single.distance_from(crn_obj, np.asarray(['X_1']), _t_length, _t_step)
+    print(res)
+    assert res > 1e1

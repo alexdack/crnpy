@@ -44,6 +44,13 @@ class CRN:
 
         self.__hash__()
 
+        # creates a dict lookup for O(1) finiding the species index
+        species_lookup = {}
+        for i, s in enumerate(self.species):
+            species_lookup[s] = i
+
+        self.species_lookup = species_lookup
+
     @classmethod
     def from_arrays(cls, species: Sequence[str], 
                 reaction_rates: Sequence[float], 
@@ -88,3 +95,24 @@ class CRN:
 
     def integrate(self, t_length, t_step):
         return simulate_trajectory( self.reaction_rates, self.reaction_stoichiometry, self.stoichiometry_matrix, self.initial_concentrations, t_length, t_step)
+    
+    def distance_from(self, other_crn, species_to_compare, t_length, t_step):
+
+        if not set(species_to_compare).issubset(set(self.species)):
+            raise ValueError('species_to_compare are not present in crn object A.')
+        
+        if not set(species_to_compare).issubset(set(other_crn.species)):
+            raise ValueError('species_to_compare are not present in crn object B.')
+        
+        sol_self = self.integrate(t_length, t_step)
+        sol_other = other_crn.integrate(t_length, t_step)
+
+        self_idx = np.asarray([ self.species_lookup[s_to_compare] for s_to_compare in species_to_compare ])
+        other_idx = np.asarray([ other_crn.species_lookup[s_to_compare] for s_to_compare in species_to_compare ])
+
+        print(self_idx)
+
+        self_traj = sol_self.y[self_idx, :]
+        other_traj = sol_other.y[other_idx, :]
+
+        return np.mean(np.square(self_traj - other_traj))
