@@ -1,6 +1,7 @@
 from typing import Sequence, Optional
 import numpy as np
 from .utils import read_crn_txt, convert_arrays_to_crn_text
+from .random import create_stoichiometry_matrices
 
 class CRN:
     def __init__(self, species: Sequence[str], 
@@ -58,13 +59,14 @@ class CRN:
         return cls(np.asarray(species), np.asarray(reaction_rates), react_stoch, prod_stoch, initial_concentrations =initial_concs_vec)
     
     @classmethod
-    def from_random(cls, number_of_species: int, number_of_reactions: int):
+    def from_random(cls, number_of_species: int, number_of_reactions: int, reaction_molecularity_ratio: dict = {0: 1, 1: 1, 2: 1}, product_molecularity_ratio: dict = {0: 1, 1: 1, 2: 1}):
 
         species = ['S_'+ str(_+1) for _ in range(number_of_species)]
         reaction_rates = np.random.lognormal(size=(number_of_reactions,))
         initial_concs_vec = np.random.lognormal(size=(number_of_species,))
-        react_stoch = np.random.randint(0, 2, size=(number_of_reactions, number_of_species))
-        prod_stoch = np.random.randint(0, 2, size=(number_of_reactions, number_of_species))
+
+        react_stoch = create_stoichiometry_matrices(number_of_reactions, number_of_species , reaction_molecularity_ratio)
+        prod_stoch = create_stoichiometry_matrices(number_of_reactions, number_of_species , product_molecularity_ratio)
 
         return cls(np.asarray(species), np.asarray(reaction_rates), react_stoch, prod_stoch, initial_concentrations =initial_concs_vec)
 

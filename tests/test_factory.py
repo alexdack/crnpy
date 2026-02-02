@@ -65,9 +65,21 @@ def test_create_crn_from_random():
 
     np.testing.assert_array_equal(crn.species, np.array(['S_1', 'S_2', 'S_3']))
     np.testing.assert_allclose(crn.reaction_rates, np.array([5.836039, 1.492059]), rtol=1e-3)
-    np.testing.assert_array_equal(crn.reaction_stoichiometry, np.array([[0, 1, 0], [0,0,0]]))
-    np.testing.assert_array_equal(crn.product_stoichiometry, np.array([[0,1,0], [1,1,0]]))
+    np.testing.assert_array_equal(crn.reaction_stoichiometry, np.array([[1, 0, 0], [0, 1, 1]]))
+    np.testing.assert_array_equal(crn.product_stoichiometry, np.array([[0, 0, 1], [2, 0, 0]]))
     np.testing.assert_allclose(crn.initial_concentrations, np.array([2.66109578, 9.40172515, 6.47247125]), rtol=1e-3)
     np.testing.assert_array_equal(crn.number_of_species, 3)
     np.testing.assert_array_equal(crn.number_of_reactions, 2)
-    np.testing.assert_array_equal(crn.stoichiometry_matrix, np.array([[0,0,0], [1,1,0]])) 
+    np.testing.assert_array_equal(crn.stoichiometry_matrix, np.array([[-1,0,1], [2,-1,-1]])) 
+
+    _from_random_bi_only = {
+        "number_of_species": 3,
+        "number_of_reactions": 2,
+        "reaction_molecularity_ratio": {0: 0, 1: 0, 2: 1},
+        "product_molecularity_ratio": {0: 0, 1: 0, 2: 1}
+    }
+
+    crn = crnpy.create_crn(from_random=_from_random_bi_only)
+    np.testing.assert_array_equal(crn.reaction_stoichiometry, np.array([[2, 0, 0], [1, 0, 1]]))
+    np.testing.assert_array_equal(crn.product_stoichiometry, np.array([[0, 0, 2], [0, 2, 0]]))
+
