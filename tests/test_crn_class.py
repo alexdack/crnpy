@@ -57,3 +57,15 @@ def test_hash(crn_obj, crn_obj_same):
     assert(crn_obj.crn_id == crn_obj_same.crn_id)
     assert hash(crn_obj) == hash(crn_obj_same)
     
+def test_integrate(crn_obj):
+    _t_length = 0.01
+    _t_step = 0.0025
+
+    sol_crn = crn_obj.integrate(_t_length, _t_step)
+    
+    assert sol_crn.y.shape == (3, 4)
+    assert sol_crn.t.shape == (4,)
+    
+    np.testing.assert_array_equal(sol_crn.t, np.array([0, 0.0025, 0.005, 0.0075]))
+    np.testing.assert_allclose(sol_crn.y, np.array([[9.,  7.618279,  6.326681,  5.162753], [10.6,  7.843389,  5.606759,  3.882952], [11., 12.381721, 13.673319, 14.837247]]), rtol=1e-4)
+

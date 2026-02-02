@@ -3,7 +3,7 @@ import csv
 from scipy.integrate import solve_ivp
 from typing import Sequence
 
-def open_csv(file):
+def open_csv(file: str):
     # Function to open .csv files and extract them for plotting
     out_data = []
     with open(file, newline='') as csvfile:
@@ -13,13 +13,13 @@ def open_csv(file):
     out_data = np.asarray(out_data) 
     return out_data
 
-def save_crn(filename, txt):
+def save_crn(filename: str, txt: str):
     # Function to save CRN.txt files
     f = open(filename, "w")
     f.write(txt)
     f.close()
 
-def read_crn_txt(filename):
+def read_crn_txt(filename: str):
     # Function to parse CRN.txt files to use in python 
     f = open(filename, "r")
     species_and_nothing = {''}
@@ -89,7 +89,7 @@ def read_crn_txt(filename):
 
     return (_species, reaction_rates, _react_stoch, _prod_stoch, _stoch_mat, number_species, number_reactions, _initial_concs_vec )
 
-def stoch_mat_to_mass_action(t, x, reaction_rates, react_stoch, stoch_mat):
+def stoch_mat_to_mass_action(t: float, x: Sequence[float], reaction_rates: Sequence[float], react_stoch: Sequence[int], stoch_mat: Sequence[int]):
     # Function that converts a stoichiometry matrix into a reaction-rate equation 
     # reaction_rates - NumPy array of reaction rates (num_of_reactions, )
     # react_stoch - NumPy array of positive ints (num_of_reactions, num_of_species )
@@ -102,7 +102,7 @@ def stoch_mat_to_mass_action(t, x, reaction_rates, react_stoch, stoch_mat):
     mass_action = np.matmul(np.transpose(stoch_mat), fluxes_with_rates)
     return mass_action
 
-def new_initial_conditions(old_inits, species, dict):
+def new_initial_conditions(old_inits: Sequence[float], species: Sequence[str], dict: dict):
     new_inits = []
     id_dict = {}
     for s in np.arange(0, len(species), 1):
@@ -113,7 +113,7 @@ def new_initial_conditions(old_inits, species, dict):
         id_dict[species[s]] = s
     return new_inits, id_dict
 
-def simulate_trajectory(crn_file, t_length, t_step, init_dict={}):
+def simulate_trajectory_from_file(crn_file: str, t_length: float, t_step: float, init_dict: dict ={}):
     # crn_file - string to .txt file in the CRN format
     # t_length - float for time period of trajectory
     # init_dict - a dict that overwrties the initial concentrations {'X_1':2, 'X_2': 2}
@@ -121,18 +121,23 @@ def simulate_trajectory(crn_file, t_length, t_step, init_dict={}):
     # reads the previously saved chemical reaction network file returning the key stoichiometry and kinetic matrices 
     species, reaction_rates, react_stoch, prod_stoch, stoch_mat, number_species, number_reactions, initial_concs = read_crn_txt(crn_file)
 
-    # groups stoichiometry matrices for use in ODE simulation 
-    args_crn = (reaction_rates, react_stoch, stoch_mat,)
-
     # helper functions new_initial_conditions and stoch_mat_to_mass_action are used to simulate general CRNs
     if len(init_dict.keys()) > 0:
         initial_concs, id_dict = new_initial_conditions(initial_concs, species, init_dict)
+    
+    return simulate_trajectory(reaction_rates, react_stoch, stoch_mat, initial_concs, t_length, t_step, rtol=1e-8)
+
+def simulate_trajectory(reaction_rates: Sequence[float], react_stoch: Sequence[int], stoch_mat: Sequence[int], initial_concs: Sequence[float], t_length: float, t_step: float, rtol:float =1e-9):
+    # t_length - float for time period of trajectory
+    # t_step - time points to view the trajectory
+
+    # groups stoichiometry matrices for use in ODE simulation 
+    args_crn = (reaction_rates, react_stoch, stoch_mat,)
 
     # time points to view the trajectory
     _t_eval =  np.arange(0, t_length, t_step)
 
-    sol_crn = solve_ivp(stoch_mat_to_mass_action, [0, t_length], initial_concs, args=args_crn, t_eval=_t_eval, rtol=10e-8)
-
+    sol_crn = solve_ivp(stoch_mat_to_mass_action, [0, t_length], initial_concs, args=args_crn, t_eval=_t_eval, rtol=rtol)
     return sol_crn
 
 def convert_arrays_to_crn_text(species: Sequence[str], reaction_rates: Sequence[float], reaction_stoichiometry: Sequence[int], product_stoichiometry: Sequence[int], initial_concentrations: Sequence[float] ):

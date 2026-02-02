@@ -1,6 +1,6 @@
 from typing import Sequence, Optional
 import numpy as np
-from .utils import read_crn_txt, convert_arrays_to_crn_text, save_crn
+from .utils import read_crn_txt, convert_arrays_to_crn_text, save_crn, simulate_trajectory
 from .random import create_stoichiometry_matrices
 
 class CRN:
@@ -54,7 +54,7 @@ class CRN:
         return cls(species, reaction_rates, reaction_stoichiometry, product_stoichiometry, initial_concentrations =initial_concentrations)
     
     @classmethod
-    def from_file(cls, filename):
+    def from_file(cls, filename: str):
         species, reaction_rates, react_stoch, prod_stoch, stoch_mat, number_species, number_reactions, initial_concs_vec = read_crn_txt(filename)
         return cls(np.asarray(species), np.asarray(reaction_rates), react_stoch, prod_stoch, initial_concentrations =initial_concs_vec)
     
@@ -70,7 +70,6 @@ class CRN:
 
         return cls(np.asarray(species), np.asarray(reaction_rates), react_stoch, prod_stoch, initial_concentrations =initial_concs_vec)
 
-    
     def __str__(self):
         return convert_arrays_to_crn_text(self.species, self.reaction_rates, self.reaction_stoichiometry, self.product_stoichiometry, self.initial_concentrations)
     
@@ -82,7 +81,10 @@ class CRN:
         self.crn_id  = hash(key_str)
         return self.crn_id 
 
-    def save(self, filename=None):
+    def save(self, filename: str=None):
         if filename is None:
-            filename = str(self.crn_id) + '.txt'
+            filename = str('crn_') + str(self.crn_id) + '.txt'
         save_crn(filename, str(self))
+
+    def integrate(self, t_length, t_step):
+        return simulate_trajectory( self.reaction_rates, self.reaction_stoichiometry, self.stoichiometry_matrix, self.initial_concentrations, t_length, t_step)

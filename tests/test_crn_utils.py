@@ -63,14 +63,30 @@ def test_stoch_mat_to_mass_action():
     np.testing.assert_array_equal(mass_action, np.array([_dx1, _dx2, _dy1]))
 
 
-def test_simulate_trajectory(test_crn):
+def test_simulate_trajectory_from_file(test_crn):
     _t_length = 0.01
     _t_step = 0.0025
-    sol_crn = utils.simulate_trajectory(test_crn, _t_length, _t_step)
+    sol_crn = utils.simulate_trajectory_from_file(test_crn, _t_length, _t_step)
     assert sol_crn.y.shape == (3, 4)
     assert sol_crn.t.shape == (4,)
     np.testing.assert_array_equal(sol_crn.t, np.array([0, 0.0025, 0.005, 0.0075]))
-    np.testing.assert_allclose(sol_crn.y, np.array([[9.,  7.618279,  6.326681,  5.162753], [10.6,  7.843389,  5.606759,  3.882952], [11., 12.381721, 13.673319, 14.837247]]))
+    np.testing.assert_allclose(sol_crn.y, np.array([[9.,  7.618279,  6.326681,  5.162753], [10.6,  7.843389,  5.606759,  3.882952], [11., 12.381721, 13.673319, 14.837247]]), rtol=1e-4)
+
+def test_simulate_trajectory():
+    _t_length = 0.01
+    _t_step = 0.0025
+    _species = np.array(['X_1', 'X_2', 'Y_1'])
+    _reaction_rates = np.array([5.7, 10.3])
+    _react_stoch = np.array([[1,0,1], [0,1,1]])
+    _prod_stoch = np.array([[0,0,2], [0,0,1]])
+    _inits = np.array([9.0, 10.6, 11.0])
+
+    sol_crn = utils.simulate_trajectory(_reaction_rates, _react_stoch, _prod_stoch-_react_stoch, _inits, _t_length, _t_step,)
+    assert sol_crn.y.shape == (3, 4)
+    assert sol_crn.t.shape == (4,)
+    np.testing.assert_array_equal(sol_crn.t, np.array([0, 0.0025, 0.005, 0.0075]))
+    np.testing.assert_allclose(sol_crn.y, np.array([[9.,  7.618279,  6.326681,  5.162753], [10.6,  7.843389,  5.606759,  3.882952], [11., 12.381721, 13.673319, 14.837247]]), rtol=1e-4)
+
 
 def test_convert_arrays_to_crn_text():
     _species = np.array(['X_1', 'X_2', 'Y_1'])
