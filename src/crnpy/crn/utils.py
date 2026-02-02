@@ -87,7 +87,7 @@ def read_crn_txt(filename: str):
     _stoch_mat = stoch_mat[:, s_idx]
     _initial_concs_vec = initial_concs_vec[s_idx]
 
-    return (_species, reaction_rates, _react_stoch, _prod_stoch, _stoch_mat, number_species, number_reactions, _initial_concs_vec )
+    return (_species, reaction_rates, _react_stoch.astype(np.int32), _prod_stoch.astype(np.int32), _stoch_mat.astype(np.int32), number_species, number_reactions, _initial_concs_vec )
 
 def stoch_mat_to_mass_action(t: float, x: Sequence[float], reaction_rates: Sequence[float], react_stoch: Sequence[int], stoch_mat: Sequence[int]):
     # Function that converts a stoichiometry matrix into a reaction-rate equation 

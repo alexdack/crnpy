@@ -8,7 +8,7 @@ def create_crn(*, from_arrays=None, from_file=None, from_random=None, **kwargs):
         return CRN.from_file(**from_file)
     
     if from_random is not None:
-        return CRN.from_random(**from_random)
+        return CRN.from_random(**from_random)        
     
     raise ValueError("Must specify a construction method")
     
