@@ -84,5 +84,5 @@ class CRN:
 
     def save(self, filename=None):
         if filename is None:
-            filename = self.crn_id + '.txt'
+            filename = str(self.crn_id) + '.txt'
         save_crn(filename, str(self))

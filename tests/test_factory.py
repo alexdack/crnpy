@@ -83,5 +83,5 @@ def test_create_crn_from_random():
     np.testing.assert_array_equal(crn.reaction_stoichiometry, np.array([[2, 0, 0], [1, 0, 1]]))
     np.testing.assert_array_equal(crn.product_stoichiometry, np.array([[0, 0, 2], [0, 2, 0]]))
 
+    
     print(crn)
-
