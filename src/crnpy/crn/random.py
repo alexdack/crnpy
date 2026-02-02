@@ -38,4 +38,4 @@ def create_stoichiometry_matrices(number_of_reactions:int , number_of_species:in
         for s in selected_molecularity_pairs[selected_species_idx]:
             mat[r,s] += 1
 
-    return mat
+    return mat.astype(np.int32)

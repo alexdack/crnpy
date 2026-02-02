@@ -34,8 +34,6 @@ class CRN:
         self.number_of_species = len(species)
         self.number_of_reactions = len(reaction_rates)
 
-        print(initial_concentrations)
-
         if isinstance(initial_concentrations,  np.ndarray):
             self.initial_concentrations = initial_concentrations
         
