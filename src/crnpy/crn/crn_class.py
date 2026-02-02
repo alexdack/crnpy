@@ -1,6 +1,6 @@
 from typing import Sequence, Optional
 import numpy as np
-from .utils import read_crn_txt, convert_arrays_to_crn_text
+from .utils import read_crn_txt, convert_arrays_to_crn_text, save_crn
 from .random import create_stoichiometry_matrices
 
 class CRN:
@@ -44,6 +44,8 @@ class CRN:
 
         self.stoichiometry_matrix =  product_stoichiometry - reaction_stoichiometry
 
+        self.__hash__()
+
     @classmethod
     def from_arrays(cls, species: Sequence[str], 
                 reaction_rates: Sequence[float], 
@@ -76,3 +78,13 @@ class CRN:
     
     def __repr__(self):
         return convert_arrays_to_crn_text(self.species, self.reaction_rates, self.reaction_stoichiometry, self.product_stoichiometry, self.initial_concentrations)
+    
+    def __hash__(self):
+        key_str =  str(hash(self.reaction_stoichiometry.data.tobytes())) + str(hash(self.product_stoichiometry.data.tobytes())) + str(hash(self.species.data.tobytes())) + str(hash(self.reaction_rates.data.tobytes())) + str(hash(self.initial_concentrations.data.tobytes()))
+        self.crn_id  = hash(key_str)
+        return self.crn_id 
+
+    def save(self, filename=None):
+        if filename is None:
+            filename = self.crn_id + '.txt'
+        save_crn(filename, str(self))
