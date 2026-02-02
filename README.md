@@ -60,6 +60,16 @@ To save the *CRN* in a human-readable format invoke the *save* method.
 crn.save("ex_crn.txt")
 ```
 
+## Numerical integration
+To numerically integrate the *CRN* object invoke the *integrate* method with parameters *t_length* and *t_step*.
+```python
+t_length = 0.01
+t_step = 0.0025
+sol_crn = crn.integrate(t_length, t_step)
+```
+> [!NOTE]
+> *integrate* maps the *CRN* to a mass-action ordinary differential equation (ODE) and applies [SciPy's *solve_ivp*](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html). This means that the time-trajectory will start from *crn.initial_concentrations* and time will start from zero increasing in steps of *t_step* until *t_length-t_step*.
+
 # Getting started: *developer*
 If you want to develop this package you can use the following commands.
 
