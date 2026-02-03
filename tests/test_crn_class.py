@@ -128,15 +128,20 @@ def test_distance_from_far(crn_single, crn_obj):
     assert res > 1e1
 
 def test_tokenize(crn_obj):
-    number_of_species = 3
-    vocab, inv_vocab = create_vocab(number_of_species, 2)
-    stoichiometry_tokens, rate_tokens, initial_concentrations_tokens = crn_obj.tokenize(vocab) 
+    max_number_of_species = 4
+    max_number_of_reaction = 3
+    vocab, inv_vocab = create_vocab(max_number_of_species, 2)
+    stoichiometry_tokens, rate_tokens, initial_concentrations_tokens = crn_obj.tokenize(vocab, max_number_of_species, max_number_of_reaction) 
     print(stoichiometry_tokens)
     print(rate_tokens)
     print(initial_concentrations_tokens)
-    np.testing.assert_array_equal(crn_obj.reaction_rates, rate_tokens)
-    np.testing.assert_array_equal(crn_obj.initial_concentrations, initial_concentrations_tokens)
-    np.testing.assert_array_equal(np.array([69, 83]), stoichiometry_tokens)
+    np.testing.assert_array_equal(crn_obj.reaction_rates, rate_tokens[:-1])
+    assert rate_tokens[-1] == 0 
+    assert stoichiometry_tokens[max_number_of_reaction-1] == 0 
+    assert initial_concentrations_tokens[-1] == 0 
+
+    np.testing.assert_array_equal(crn_obj.initial_concentrations, initial_concentrations_tokens[:-1])
+    np.testing.assert_array_equal(np.array([117, 153, 0]), stoichiometry_tokens)
     
     # checks that you can convert backwards to the same stoichiometry
     react_stoich, product_stoich = parse_tuples_into_matrix(stoichiometry_tokens, inv_vocab, crn_obj.number_of_reactions, crn_obj.number_of_species)

@@ -125,11 +125,21 @@ class CRN:
 
         return np.mean(np.square(self_traj - other_traj))  
 
-    def tokenize(self, vocab):
+    def tokenize(self, vocab, max_number_of_species, max_number_of_reaction):
         list_of_reaction_tuples = parse_matrices_into_tuples(self.reaction_stoichiometry, self.product_stoichiometry, self.number_of_reactions)
         stoichiometry_tokens = [ vocab[_] for _ in list_of_reaction_tuples ]
         rate_tokens = self.reaction_rates
         initial_concentrations_tokens = self.initial_concentrations
-        return (stoichiometry_tokens, rate_tokens, initial_concentrations_tokens)
 
+        if self.number_of_species < max_number_of_species:
+            for _ in range(max_number_of_species - self.number_of_species):
+                initial_concentrations_tokens = np.append(initial_concentrations_tokens, 0)
+
+        if self.number_of_reactions < max_number_of_reaction:
+            for _ in range(max_number_of_reaction - self.number_of_reactions):
+                stoichiometry_tokens+= [0]
+                rate_tokens = np.append(rate_tokens, 0)
+
+        return (stoichiometry_tokens, rate_tokens, initial_concentrations_tokens)
+    
 

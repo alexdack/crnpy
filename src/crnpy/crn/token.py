@@ -8,8 +8,8 @@ def all_reaction_tuples(number_of_species:int, molecularity:int):
     flatten_combs = list(itertools.chain.from_iterable(all_combs.values()))
     return list(itertools.product(flatten_combs, flatten_combs))
 
-def create_vocab(number_of_species:int, molecularity:int):
-    reactions = all_reaction_tuples(number_of_species, molecularity)
+def create_vocab(max_number_of_species:int, molecularity:int):
+    reactions = all_reaction_tuples(max_number_of_species, molecularity)
     vocab = {}
     inv_vocab = {}
 
