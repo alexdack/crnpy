@@ -2,6 +2,7 @@ import crnpy
 import numpy as np
 import pytest
 from pathlib import Path
+from crnpy.crn import token
 
 @pytest.fixture
 def test_crn():
@@ -88,3 +89,21 @@ def test_create_crn_from_random():
 
     
     print(crn)
+
+def test_create_crn_from_tokens():
+    number_of_species = 3
+    vocab, inv_vocab = token.create_vocab(number_of_species, 2)
+    stoichiometry_tokens = [69, 83]
+    rate_tokens = np.asarray([1, 10])
+    initial_concentrations_tokens = np.asarray([10, 0, 0])
+
+    crn = crnpy.create_crn(from_tokens={
+        "stoichiometry_tokens": stoichiometry_tokens,
+        "rate_tokens": rate_tokens,
+        "initial_concentrations_tokens": initial_concentrations_tokens, 
+        "inv_vocab": inv_vocab
+    })
+    np.testing.assert_array_equal(crn.reaction_stoichiometry, np.array([[1,0,1], [0,1,1]]))
+    np.testing.assert_array_equal(crn.product_stoichiometry, np.array([[0,0,2], [0,0,1]]))
+    print(crn)
+

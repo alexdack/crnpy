@@ -1,1 +1,1 @@
-__all__ = ["utils", "crn_class", "random"]
+__all__ = ["utils", "crn_class", "random", "token"]

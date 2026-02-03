@@ -1,6 +1,6 @@
 from .crn.crn_class import CRN
 
-def create_crn(*, from_arrays=None, from_file=None, from_random=None, **kwargs):
+def create_crn(*, from_arrays=None, from_file=None, from_random=None, from_tokens=None,  **kwargs):
     if from_arrays is not None:
         return CRN.from_arrays(**from_arrays)
     
@@ -8,7 +8,10 @@ def create_crn(*, from_arrays=None, from_file=None, from_random=None, **kwargs):
         return CRN.from_file(**from_file)
     
     if from_random is not None:
-        return CRN.from_random(**from_random)        
+        return CRN.from_random(**from_random)
+
+    if from_tokens is not None:
+        return CRN.from_tokens(**from_tokens)                
     
     raise ValueError("Must specify a construction method")
     

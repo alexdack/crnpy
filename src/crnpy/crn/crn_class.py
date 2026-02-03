@@ -2,6 +2,7 @@ from typing import Sequence, Optional
 import numpy as np
 from .utils import read_crn_txt, convert_arrays_to_crn_text, save_crn, simulate_trajectory
 from .random import create_stoichiometry_matrices
+from .token import parse_matrices_into_tuples, parse_tuples_into_matrix
 
 class CRN:
     def __init__(self, species: Sequence[str], 
@@ -77,6 +78,15 @@ class CRN:
 
         return cls(np.asarray(species), np.asarray(reaction_rates), react_stoch, prod_stoch, initial_concentrations =initial_concs_vec)
 
+    @classmethod
+    def from_tokens(cls, stoichiometry_tokens, rate_tokens, initial_concentrations_tokens, inv_vocab):
+        number_of_species = len(initial_concentrations_tokens)
+        number_of_reactions = len(rate_tokens)
+        species = ['S_'+ str(_+1) for _ in range(len(initial_concentrations_tokens))]
+        reaction_stoichiometry, product_stoichiometry = parse_tuples_into_matrix(stoichiometry_tokens, inv_vocab, number_of_reactions, number_of_species)
+
+        return cls(np.asarray(species), rate_tokens, reaction_stoichiometry, product_stoichiometry, initial_concentrations =initial_concentrations_tokens)
+    
     def __str__(self):
         return convert_arrays_to_crn_text(self.species, self.reaction_rates, self.reaction_stoichiometry, self.product_stoichiometry, self.initial_concentrations)
     
@@ -103,16 +113,23 @@ class CRN:
         
         if not set(species_to_compare).issubset(set(other_crn.species)):
             raise ValueError('species_to_compare are not present in crn object B.')
-        
+    
         sol_self = self.integrate(t_length, t_step)
         sol_other = other_crn.integrate(t_length, t_step)
 
         self_idx = np.asarray([ self.species_lookup[s_to_compare] for s_to_compare in species_to_compare ])
         other_idx = np.asarray([ other_crn.species_lookup[s_to_compare] for s_to_compare in species_to_compare ])
 
-        print(self_idx)
-
         self_traj = sol_self.y[self_idx, :]
         other_traj = sol_other.y[other_idx, :]
 
-        return np.mean(np.square(self_traj - other_traj))
+        return np.mean(np.square(self_traj - other_traj))  
+
+    def tokenize(self, vocab):
+        list_of_reaction_tuples = parse_matrices_into_tuples(self.reaction_stoichiometry, self.product_stoichiometry, self.number_of_reactions)
+        stoichiometry_tokens = [ vocab[_] for _ in list_of_reaction_tuples ]
+        rate_tokens = self.reaction_rates
+        initial_concentrations_tokens = self.initial_concentrations
+        return (stoichiometry_tokens, rate_tokens, initial_concentrations_tokens)
+
+

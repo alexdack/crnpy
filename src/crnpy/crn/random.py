@@ -10,7 +10,6 @@ def iterate_all_molecularity_tuples(number_of_species:int, molecularity:int):
     
     return all_combinations
 
-
 def create_stoichiometry_matrices(number_of_reactions:int , number_of_species:int , molecularity_ratio: dict):
     # inits an empty matrix
     mat = np.zeros((number_of_reactions, number_of_species))

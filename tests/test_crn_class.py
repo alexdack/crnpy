@@ -2,6 +2,8 @@ import crnpy
 import numpy as np
 import pytest
 from pathlib import Path
+from crnpy.crn.token import create_vocab, parse_tuples_into_matrix
+
 
 @pytest.fixture
 def crn_obj():
@@ -123,5 +125,20 @@ def test_distance_from_far(crn_single, crn_obj):
     _t_length = 0.1
     _t_step = 0.0025
     res = crn_single.distance_from(crn_obj, np.asarray(['X_1']), _t_length, _t_step)
-    print(res)
     assert res > 1e1
+
+def test_tokenize(crn_obj):
+    number_of_species = 3
+    vocab, inv_vocab = create_vocab(number_of_species, 2)
+    stoichiometry_tokens, rate_tokens, initial_concentrations_tokens = crn_obj.tokenize(vocab) 
+    print(stoichiometry_tokens)
+    print(rate_tokens)
+    print(initial_concentrations_tokens)
+    np.testing.assert_array_equal(crn_obj.reaction_rates, rate_tokens)
+    np.testing.assert_array_equal(crn_obj.initial_concentrations, initial_concentrations_tokens)
+    np.testing.assert_array_equal(np.array([69, 83]), stoichiometry_tokens)
+    
+    # checks that you can convert backwards to the same stoichiometry
+    react_stoich, product_stoich = parse_tuples_into_matrix(stoichiometry_tokens, inv_vocab, crn_obj.number_of_reactions, crn_obj.number_of_species)
+    np.testing.assert_array_equal(crn_obj.reaction_stoichiometry, react_stoich)
+    np.testing.assert_array_equal(crn_obj.product_stoichiometry, product_stoich)
