@@ -3,6 +3,15 @@ import csv
 from scipy.integrate import solve_ivp
 from typing import Sequence
 
+MAX_VAL = 1e6
+
+def blowup_event(t, y, *args):
+    return MAX_VAL - np.max(np.abs(y))
+
+blowup_event.terminal = True   
+blowup_event.direction = -1  
+
+
 def open_csv(file: str):
     # Function to open .csv files and extract them for plotting
     out_data = []
@@ -137,7 +146,7 @@ def simulate_trajectory(reaction_rates: Sequence[float], react_stoch: Sequence[i
     # time points to view the trajectory
     _t_eval =  np.arange(0, t_length, t_step)
 
-    sol_crn = solve_ivp(stoch_mat_to_mass_action, [0, t_length], initial_concs, args=args_crn, t_eval=_t_eval, rtol=rtol)
+    sol_crn = solve_ivp(stoch_mat_to_mass_action, [0, t_length], initial_concs, args=args_crn, t_eval=_t_eval, rtol=rtol, events=blowup_event)
     return sol_crn
 
 def convert_arrays_to_crn_text(species: Sequence[str], reaction_rates: Sequence[float], reaction_stoichiometry: Sequence[int], product_stoichiometry: Sequence[int], initial_concentrations: Sequence[float] ):

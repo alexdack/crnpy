@@ -85,6 +85,25 @@ def crn_double():
     crn = crnpy.create_crn(from_arrays=_from_arrays)
     return crn
 
+@pytest.fixture
+def crn_blowup():
+    species =  np.array(['X_1'])
+    reaction_rates = np.array([0.5])
+    react_stoch = np.array([[1]])
+    prod_stoch = np.array([[2]])
+    inits = np.array([9.9e5])
+
+    _from_arrays = {
+        "species": species,
+        "reaction_rates": reaction_rates,
+        "reaction_stoichiometry": react_stoch,
+        "product_stoichiometry":prod_stoch,
+        "initial_concentrations": inits
+    }
+
+    crn = crnpy.create_crn(from_arrays=_from_arrays)
+    return crn
+
 def test_crn_repr(crn_obj, crn_text):
     rep = repr(crn_obj)
     assert crn_text == rep
@@ -109,6 +128,25 @@ def test_integrate(crn_obj):
     np.testing.assert_array_equal(sol_crn.t, np.array([0, 0.0025, 0.005, 0.0075]))
     np.testing.assert_allclose(sol_crn.y, np.array([[9.,  7.618279,  6.326681,  5.162753], [10.6,  7.843389,  5.606759,  3.882952], [11., 12.381721, 13.673319, 14.837247]]), rtol=1e-4)
 
+def test_integrate_blowup(crn_blowup):
+    _t_length = 2
+    _t_step = 0.0025
+
+    sol_crn = crn_blowup.integrate(_t_length, _t_step)
+    
+    print(sol_crn.y.shape)
+    print(sol_crn.t.shape)
+
+    assert sol_crn.y.shape == (1, 9)
+    assert sol_crn.t.shape == (9,)
+    
+def test_distance_from_blowup(crn_obj, crn_blowup):
+    _t_length = 2
+    _t_step = 0.0025
+
+    mse = crn_obj.distance_from(crn_blowup, np.asarray(['X_1']), _t_length, _t_step)
+    assert mse == np.inf
+  
 def test_distance_from_same(crn_obj):
     _t_length = 0.01
     _t_step = 0.0025

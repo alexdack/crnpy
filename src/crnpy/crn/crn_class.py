@@ -142,6 +142,10 @@ class CRN:
         self_traj = sol_self.y[self_idx, :]
         other_traj = sol_other.y[other_idx, :]
 
+        if self_traj.shape != other_traj.shape:
+            Warning('Trajectories are not the same length. This is assumed to be due to blowup. Returning distance of infinity.')
+            return np.inf
+
         return np.mean(np.square(self_traj - other_traj))  
 
     def tokenize(self, vocab, max_number_of_species, max_number_of_reaction):
