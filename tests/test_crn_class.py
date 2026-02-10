@@ -144,8 +144,11 @@ def test_distance_from_blowup(crn_obj, crn_blowup):
     _t_length = 2
     _t_step = 0.0025
 
-    mse = crn_obj.distance_from(crn_blowup, np.asarray(['X_1']), _t_length, _t_step)
+    (mse, mse_ends, change_in_val) = crn_obj.distance_from(crn_blowup, np.asarray(['X_1']), _t_length, _t_step)
     assert mse == np.inf
+    assert mse_ends == np.inf
+    assert change_in_val == np.inf
+
   
 def test_distance_from_same(crn_obj):
     _t_length = 0.01

@@ -144,7 +144,7 @@ class CRN:
 
         if self_traj.shape != other_traj.shape:
             Warning('Trajectories are not the same length. This is assumed to be due to blowup. Returning distance of infinity.')
-            return np.inf
+            return (np.inf, np.inf, np.inf)
         
         mse = np.mean(np.square(self_traj - other_traj))
         mse_ends = np.mean(np.square(self_traj[:, -1] - other_traj[:, -1]))
