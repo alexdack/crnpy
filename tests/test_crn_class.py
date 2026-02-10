@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 from pathlib import Path
 from crnpy.crn.token import create_vocab, parse_tuples_into_matrix
-
+print(crnpy.__file__)
 
 @pytest.fixture
 def crn_obj():

@@ -86,6 +86,25 @@ class CRN:
         reaction_stoichiometry, product_stoichiometry = parse_tuples_into_matrix(stoichiometry_tokens, inv_vocab, number_of_reactions, number_of_species)
 
         return cls(np.asarray(species), rate_tokens, reaction_stoichiometry, product_stoichiometry, initial_concentrations =initial_concentrations_tokens)
+
+    @classmethod
+    def from_dict(cls, d):
+        return cls(
+            species=d["species"],
+            reaction_rates=d["reaction_rates"],
+            reaction_stoichiometry=d["reaction_stoichiometry"],
+            product_stoichiometry=d["product_stoichiometry"],
+            initial_concentrations=d["initial_concentrations"]
+        )
+    
+    def to_dict(self):
+        return {
+            "species": self.species,
+            "reaction_rates": self.reaction_rates,
+            "reaction_stoichiometry": self.reaction_stoichiometry,
+            "product_stoichiometry": self.product_stoichiometry,
+            "initial_concentrations": self.initial_concentrations,
+        }
     
     def __str__(self):
         return convert_arrays_to_crn_text(self.species, self.reaction_rates, self.reaction_stoichiometry, self.product_stoichiometry, self.initial_concentrations)
