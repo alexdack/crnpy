@@ -90,11 +90,11 @@ class CRN:
     @classmethod
     def from_dict(cls, d):
         return cls(
-            species=d["species"],
-            reaction_rates=d["reaction_rates"],
-            reaction_stoichiometry=d["reaction_stoichiometry"],
-            product_stoichiometry=d["product_stoichiometry"],
-            initial_concentrations=d["initial_concentrations"]
+            species=np.asarray(d["species"]),
+            reaction_rates=np.asarray(d["reaction_rates"]),
+            reaction_stoichiometry=np.asarray(d["reaction_stoichiometry"]),
+            product_stoichiometry=np.asarray(d["product_stoichiometry"]),
+            initial_concentrations=np.asarray(d["initial_concentrations"])
         )
     
     def to_dict(self):
