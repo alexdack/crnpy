@@ -99,11 +99,11 @@ class CRN:
     
     def to_dict(self):
         return {
-            "species": self.species,
-            "reaction_rates": self.reaction_rates,
-            "reaction_stoichiometry": self.reaction_stoichiometry,
-            "product_stoichiometry": self.product_stoichiometry,
-            "initial_concentrations": self.initial_concentrations,
+            "species": self.species.tolist(),
+            "reaction_rates": self.reaction_rates.tolist(),
+            "reaction_stoichiometry": self.reaction_stoichiometry.tolist(),
+            "product_stoichiometry": self.product_stoichiometry.tolist(),
+            "initial_concentrations": self.initial_concentrations.tolist(),
         }
     
     def __str__(self):
