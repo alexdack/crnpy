@@ -145,8 +145,12 @@ class CRN:
         if self_traj.shape != other_traj.shape:
             Warning('Trajectories are not the same length. This is assumed to be due to blowup. Returning distance of infinity.')
             return np.inf
+        
+        mse = np.mean(np.square(self_traj - other_traj))
+        mse_ends = np.mean(np.square(self_traj[:, -1] - other_traj[:, -1]))
+        change_in_val = np.mean(np.abs(self_traj[:, 0] - self_traj[:, -1]))
 
-        return np.mean(np.square(self_traj - other_traj))  
+        return (mse, mse_ends, change_in_val) 
 
     def tokenize(self, vocab, max_number_of_species, max_number_of_reaction):
         list_of_reaction_tuples = parse_matrices_into_tuples(self.reaction_stoichiometry, self.product_stoichiometry, self.number_of_reactions)

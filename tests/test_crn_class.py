@@ -150,20 +150,20 @@ def test_distance_from_blowup(crn_obj, crn_blowup):
 def test_distance_from_same(crn_obj):
     _t_length = 0.01
     _t_step = 0.0025
-    res = crn_obj.distance_from(crn_obj, np.asarray(['X_1', 'X_2']), _t_length, _t_step)
-    assert res < 1e-9
+    mse, mse_ends, change_in_val = crn_obj.distance_from(crn_obj, np.asarray(['X_1', 'X_2']), _t_length, _t_step)
+    assert mse < 1e-9
 
 def test_distance_from_net_reactions(crn_single, crn_double):
     _t_length = 0.1
     _t_step = 0.0025
-    res = crn_single.distance_from(crn_double, np.asarray(['X_1']), _t_length, _t_step)
-    assert res < 1e-9
+    mse, mse_ends, change_in_val = crn_single.distance_from(crn_double, np.asarray(['X_1']), _t_length, _t_step)
+    assert mse < 1e-9
 
 def test_distance_from_far(crn_single, crn_obj):
     _t_length = 0.1
     _t_step = 0.0025
-    res = crn_single.distance_from(crn_obj, np.asarray(['X_1']), _t_length, _t_step)
-    assert res > 1e1
+    mse, mse_ends, change_in_val = crn_single.distance_from(crn_obj, np.asarray(['X_1']), _t_length, _t_step)
+    assert mse > 1e1
 
 def test_tokenize(crn_obj):
     max_number_of_species = 4
