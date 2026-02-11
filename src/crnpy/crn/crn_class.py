@@ -175,4 +175,43 @@ class CRN:
 
         return (stoichiometry_tokens, rate_tokens, initial_concentrations_tokens)
     
+    def reduce(self):
+        # identifies reactions with the same reactant and product stoichiometry and sums their rates, setting the rate of the duplicate reaction to 0
+        _reaction_rates = self.reaction_rates        
+        for r1 in range(self.number_of_reactions):
+            for r2 in range(r1+1, self.number_of_reactions):
+                if np.all(self.reaction_stoichiometry[r1, :] == self.reaction_stoichiometry[r2, :]) and np.all(self.product_stoichiometry[r1, :] == self.product_stoichiometry[r2, :]):
+                    _reaction_rates[r1] = _reaction_rates[r1] + _reaction_rates[r2]
+                    _reaction_rates[r2] = 0
+                    
+        self.reaction_rates = _reaction_rates
+
+        # identifies reactions where the reactant and product stoichiometry are the same and sets their rate to 0
+        for r in range(self.number_of_reactions):
+            if np.all(self.reaction_stoichiometry[r, :] == self.product_stoichiometry[r, :]):
+                self.reaction_rates[r] = 0
+
+        # removes reactions with 0 rate and updates the stoichiometry matrix and number of reactions accordingly
+        arg_reactions = np.argwhere(self.reaction_rates > 0).flatten()
+        self.reaction_rates = self.reaction_rates[arg_reactions]
+        self.reaction_stoichiometry = self.reaction_stoichiometry[arg_reactions, :]
+        self.product_stoichiometry = self.product_stoichiometry[arg_reactions, :]
+        self.stoichiometry_matrix = self.product_stoichiometry - self.reaction_stoichiometry
+        self.number_of_reactions = len(self.reaction_rates)
+
+        # identifies species that are not involved in any reaction and removes them, updating the stoichiometry matrix and number of species accordingly
+        arg_species = [s for s in range(self.number_of_species) if not (np.all(self.reaction_stoichiometry[:, s] == 0) and np.all(self.product_stoichiometry[:, s] == 0))]
+
+        self.initial_concentrations = self.initial_concentrations[arg_species]
+        self.species = self.species[arg_species]
+        self.reaction_stoichiometry = self.reaction_stoichiometry[:, arg_species]
+        self.product_stoichiometry = self.product_stoichiometry[:, arg_species]
+        self.stoichiometry_matrix = self.product_stoichiometry - self.reaction_stoichiometry
+        self.number_of_species = len(self.species) 
+
+
+
+
+
+    
 

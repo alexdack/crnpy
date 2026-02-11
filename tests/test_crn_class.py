@@ -86,6 +86,25 @@ def crn_double():
     return crn
 
 @pytest.fixture
+def crn_verbose():
+    species =  np.array(['X_1', 'X_2', 'X_3'])
+    reaction_rates = np.array([0.5, 0.5, 0, 0.5])
+    react_stoch = np.array([[1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 1, 0]])
+    prod_stoch = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [1, 1, 0]])
+    inits = np.array([10.0, 5.0, 1])
+
+    _from_arrays = {
+        "species": species,
+        "reaction_rates": reaction_rates,
+        "reaction_stoichiometry": react_stoch,
+        "product_stoichiometry":prod_stoch,
+        "initial_concentrations": inits
+    }
+
+    crn = crnpy.create_crn(from_arrays=_from_arrays)
+    return crn
+
+@pytest.fixture
 def crn_blowup():
     species =  np.array(['X_1'])
     reaction_rates = np.array([0.5])
@@ -188,3 +207,12 @@ def test_tokenize(crn_obj):
     react_stoich, product_stoich = parse_tuples_into_matrix(stoichiometry_tokens, inv_vocab, crn_obj.number_of_reactions, crn_obj.number_of_species)
     np.testing.assert_array_equal(crn_obj.reaction_stoichiometry, react_stoich)
     np.testing.assert_array_equal(crn_obj.product_stoichiometry, product_stoich)
+
+def test_reduce(crn_verbose):
+    print(crn_verbose)
+    assert crn_verbose.number_of_reactions == 4
+    assert crn_verbose.stoichiometry_matrix.shape == (4, 3)
+    crn_verbose.reduce()
+    print(crn_verbose)
+    assert crn_verbose.number_of_reactions == 1
+    assert crn_verbose.stoichiometry_matrix.shape == (1, 1)
