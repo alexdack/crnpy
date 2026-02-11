@@ -145,3 +145,15 @@ def test_create_crn_from_tokens():
     np.testing.assert_array_equal(crn.product_stoichiometry, np.array([[0,0,2], [0,0,1]]))
     print(crn)
 
+    crn = crnpy.create_crn(from_tokens={
+        "stoichiometry_tokens": stoichiometry_tokens,
+        "rate_tokens": rate_tokens,
+        "initial_concentrations_tokens": None, 
+        "inv_vocab": inv_vocab
+    })
+    assert crn.number_of_species == 20
+    assert crn.initial_concentrations.shape == (20,)
+    print(crn)
+
+
+

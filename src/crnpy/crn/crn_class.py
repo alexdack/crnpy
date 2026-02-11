@@ -80,8 +80,14 @@ class CRN:
 
     @classmethod
     def from_tokens(cls, stoichiometry_tokens, rate_tokens, initial_concentrations_tokens, inv_vocab):
-        number_of_species = len(initial_concentrations_tokens)
         number_of_reactions = len(rate_tokens)
+        
+        if initial_concentrations_tokens is None:
+            number_of_species = 20
+            initial_concentrations_tokens = np.ones(shape=(number_of_species,))
+        else:
+            number_of_species = len(initial_concentrations_tokens)
+
         species = ['S_'+ str(_+1) for _ in range(len(initial_concentrations_tokens))]
         reaction_stoichiometry, product_stoichiometry = parse_tuples_into_matrix(stoichiometry_tokens, inv_vocab, number_of_reactions, number_of_species)
 
