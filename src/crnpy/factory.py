@@ -1,7 +1,6 @@
 from .crn.crn_class import CRN
 
 def create_crn(*, from_arrays=None, from_file=None, from_random=None, from_tokens=None, from_dict=None, **kwargs):
-    print("from_dict", from_dict)
     if from_arrays is not None:
         return CRN.from_arrays(**from_arrays)
     
