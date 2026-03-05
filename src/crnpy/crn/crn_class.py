@@ -131,7 +131,7 @@ class CRN:
     def integrate(self, t_length, t_step):
         return simulate_trajectory( self.reaction_rates, self.reaction_stoichiometry, self.stoichiometry_matrix, self.initial_concentrations, t_length, t_step)
     
-    def distance_from(self, other_crn, species_to_compare, t_length, t_step):
+    def distance_from(self, other_crn, species_to_compare, t_length, t_step, distance_metric = 'mse'):
 
         if not set(species_to_compare).issubset(set(self.species)):
             raise ValueError('species_to_compare are not present in crn object A.')
@@ -149,10 +149,20 @@ class CRN:
         other_traj = sol_other.y[other_idx, :]
 
         if self_traj.shape != other_traj.shape:
-            Warning('Trajectories are not the same length. This is assumed to be due to blowup. Returning distance of infinity.')
-            return (np.inf, np.inf, np.inf)
+            Warning('Trajectories are not the same length. This is assumed to be due to blowup. Using shortest trajectory.')
+            actual_length = min(self_traj.shape[1], other_traj.shape[1])
+            self_traj = self_traj[:, :actual_length]
+            other_traj = other_traj[:, :actual_length]
         
-        mse = np.mean(np.square(self_traj - other_traj))
+        if distance_metric == 'mse':
+            mse = np.mean(np.square(self_traj - other_traj))
+        elif distance_metric == 'mae':
+            mse = np.mean(np.abs(self_traj - other_traj))
+        elif distance_metric == 'cosine':
+            mse = 1 - np.dot(self_traj.flatten(), other_traj.flatten()) / (np.linalg.norm(self_traj.flatten()) * np.linalg.norm(other_traj.flatten()))
+        else:
+            raise ValueError('distance_metric must be one of mse, mae, or cosine.')
+
         mse_ends = np.mean(np.square(self_traj[:, -1] - other_traj[:, -1]))
         change_in_val = np.mean(np.abs(self_traj[:, 0] - self_traj[:, -1]))
 

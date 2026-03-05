@@ -164,9 +164,14 @@ def test_distance_from_blowup(crn_obj, crn_blowup):
     _t_step = 0.0025
 
     (mse, mse_ends, change_in_val) = crn_obj.distance_from(crn_blowup, np.asarray(['X_1']), _t_length, _t_step)
-    assert mse == np.inf
-    assert mse_ends == np.inf
-    assert change_in_val == np.inf
+    assert mse == 989961595055.306
+    assert mse_ends == 999896244560.6056
+    assert change_in_val == 7.455512101724974
+
+    (metric, mse_ends, change_in_val) = crn_obj.distance_from(crn_blowup, np.asarray(['X_1']), _t_length, _t_step, distance_metric='cosine')
+    assert metric == 0.11731017300393398
+    assert mse_ends == 999896244560.6056
+    assert change_in_val == 7.455512101724974
 
   
 def test_distance_from_same(crn_obj):
@@ -174,12 +179,22 @@ def test_distance_from_same(crn_obj):
     _t_step = 0.0025
     mse, mse_ends, change_in_val = crn_obj.distance_from(crn_obj, np.asarray(['X_1', 'X_2']), _t_length, _t_step)
     assert mse < 1e-9
+    metric, mse_ends, change_in_val = crn_obj.distance_from(crn_obj, np.asarray(['X_1', 'X_2']), _t_length, _t_step, distance_metric='cosine')
+    assert metric < 1e-9
+    mae, mse_ends, change_in_val = crn_obj.distance_from(crn_obj, np.asarray(['X_1', 'X_2']), _t_length, _t_step, distance_metric='mae')
+    assert mae < 1e-9
+
+
 
 def test_distance_from_net_reactions(crn_single, crn_double):
     _t_length = 0.1
     _t_step = 0.0025
     mse, mse_ends, change_in_val = crn_single.distance_from(crn_double, np.asarray(['X_1']), _t_length, _t_step)
     assert mse < 1e-9
+    metric, mse_ends, change_in_val = crn_single.distance_from(crn_double, np.asarray(['X_1']), _t_length, _t_step, distance_metric='cosine')
+    assert metric < 1e-9
+    mae, mse_ends, change_in_val = crn_single.distance_from(crn_double, np.asarray(['X_1']), _t_length, _t_step, distance_metric='mae')
+    assert mae < 1e-9
 
 def test_distance_from_far(crn_single, crn_obj):
     _t_length = 0.1
