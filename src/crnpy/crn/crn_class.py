@@ -3,7 +3,7 @@ import numpy as np
 from .utils import read_crn_txt, convert_arrays_to_crn_text, save_crn, simulate_trajectory
 from .random import create_stoichiometry_matrices
 from .token import parse_matrices_into_tuples, parse_tuples_into_matrix
-
+from .dynamics import steady_states_julia_solver
 
 class CRN:
     def __init__(self, species: Sequence[str], 
@@ -220,7 +220,9 @@ class CRN:
         self.stoichiometry_matrix = self.product_stoichiometry - self.reaction_stoichiometry
         self.number_of_species = len(self.species) 
 
-
+    def steady_states_eqs(self):
+        vars, ode_system = steady_states_julia_solver(self.species, self.reaction_rates, self.reaction_stoichiometry, self.stoichiometry_matrix, self.initial_concentrations)
+        return vars, ode_system
 
 
 
