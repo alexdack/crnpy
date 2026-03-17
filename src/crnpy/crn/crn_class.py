@@ -4,6 +4,7 @@ from .utils import read_crn_txt, convert_arrays_to_crn_text, save_crn, simulate_
 from .random import create_stoichiometry_matrices
 from .token import parse_matrices_into_tuples, parse_tuples_into_matrix
 
+
 class CRN:
     def __init__(self, species: Sequence[str], 
                  reaction_rates: Sequence[float], 
