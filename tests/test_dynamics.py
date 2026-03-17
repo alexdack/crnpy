@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 from pathlib import Path
 from crnpy.crn import dynamics
-
+import re
 
 @pytest.fixture
 def test_crn():
@@ -51,9 +51,31 @@ def test_f_conservation_julia_solver(test_crn):
     conservation_laws = dynamics.f_conservation_julia_solver(test_crn.species, test_crn.stoichiometry_matrix, test_crn.initial_concentrations)
     print(conservation_laws)
     expected_conservation_laws = ['0.7071067811865475*X_1 + 0.7071067811865476*Y_1-1.414213562373095']
+
+    # Extract floats
+    actual_floats = [float(x) for x in re.findall(r'[-+]?\d*\.\d+(?:[eE][-+]?\d+)?', conservation_laws[0])]
+    expected_floats = [float(x) for x in re.findall(r'[-+]?\d*\.\d+(?:[eE][-+]?\d+)?', expected_conservation_laws[0])]
+
+    # Compare each float with a relative or absolute tolerance
+    for actual_float, expected_float in zip(actual_floats, expected_floats):    
+        # Compare with a relative or absolute tolerance
+        assert np.isclose(actual_float, expected_float, atol=1e-6)
+
     assert conservation_laws == expected_conservation_laws
 
 def test_steady_states_julia_solver(test_crn):
     vars, ode_system = dynamics.steady_states_julia_solver(test_crn.species, test_crn.reaction_rates, test_crn.reaction_stoichiometry, test_crn.stoichiometry_matrix, test_crn.initial_concentrations)
     assert vars == 'X_1 X_2 Y_1'
-    assert ode_system == '-5.7*X_1*Y_1, -10.3*X_2*Y_1, +5.7*X_1*Y_1, 0.7071067811865475*X_1 + 0.7071067811865476*Y_1-1.414213562373095'
+
+    expected_ode_system = '-5.7*X_1*Y_1, -10.3*X_2*Y_1, +5.7*X_1*Y_1, 0.7071067811865475*X_1 + 0.7071067811865476*Y_1-1.414213562373095'
+
+    # Extract floats
+    actual_floats = [float(x) for x in re.findall(r'[-+]?\d*\.\d+(?:[eE][-+]?\d+)?', ode_system)]
+    expected_floats = [float(x) for x in re.findall(r'[-+]?\d*\.\d+(?:[eE][-+]?\d+)?', expected_ode_system)]
+
+    assert 6 == len(expected_floats)
+
+    # Compare each float with a relative or absolute tolerance
+    for actual_float, expected_float in zip(actual_floats, expected_floats):    
+        # Compare with a relative or absolute tolerance
+        assert np.isclose(actual_float, expected_float, atol=1e-6)

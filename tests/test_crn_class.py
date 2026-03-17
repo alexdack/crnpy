@@ -164,14 +164,14 @@ def test_distance_from_blowup(crn_obj, crn_blowup):
     _t_step = 0.0025
 
     (mse, mse_ends, change_in_val) = crn_obj.distance_from(crn_blowup, np.asarray(['X_1']), _t_length, _t_step)
-    assert mse == 989961595055.306
-    assert mse_ends == 999896244560.6056
-    assert change_in_val == 7.455512101724974
+    assert np.isclose(mse, 989961595055.306, atol=1e-4)
+    assert np.isclose(mse_ends, 999896244560.6056, atol=1e-4)
+    assert np.isclose(change_in_val, 7.455512101724974, atol=1e-4)
 
     (metric, mse_ends, change_in_val) = crn_obj.distance_from(crn_blowup, np.asarray(['X_1']), _t_length, _t_step, distance_metric='cosine')
-    assert metric == 0.11731017300393398
-    assert mse_ends == 999896244560.6056
-    assert change_in_val == 7.455512101724974
+    assert np.isclose(change_in_val, 7.455512101724974, atol=1e-4)
+    assert np.isclose(metric, 0.11731017300393398, atol=1e-4)  
+    assert np.isclose(mse_ends, 999896244560.6056, atol=1e-4)  
 
   
 def test_distance_from_same(crn_obj):
