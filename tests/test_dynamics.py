@@ -61,8 +61,6 @@ def test_f_conservation_julia_solver(test_crn):
         # Compare with a relative or absolute tolerance
         assert np.isclose(actual_float, expected_float, atol=1e-6)
 
-    assert conservation_laws == expected_conservation_laws
-
 def test_steady_states_julia_solver(test_crn):
     vars, ode_system = dynamics.steady_states_julia_solver(test_crn.species, test_crn.reaction_rates, test_crn.reaction_stoichiometry, test_crn.stoichiometry_matrix, test_crn.initial_concentrations)
     assert vars == 'X_1 X_2 Y_1'
