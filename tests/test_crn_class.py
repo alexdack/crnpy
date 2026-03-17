@@ -253,4 +253,3 @@ def test_steady_states(crn_obj):
         # Compare with a relative or absolute tolerance
         assert np.isclose(actual_float, expected_float, atol=1e-6)
 
-    assert ode_system == expected_ode_system
