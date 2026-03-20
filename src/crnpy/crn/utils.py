@@ -171,8 +171,8 @@ def convert_arrays_to_crn_text(species: Sequence[str], reaction_rates: Sequence[
             for _ in range(stoichiometry_product):
                 product_list.append(species_str)
         
-        reactants_str = " + ".join(reactants_list) if reactants_list else "0"
-        product_str = " + ".join(product_list) if product_list else "0"
+        reactants_str = " + ".join(reactants_list) if reactants_list else ""
+        product_str = " + ".join(product_list) if product_list else ""
 
         s+= reactants_str + '->'+product_str+','+str(rate) +'\n'
 
