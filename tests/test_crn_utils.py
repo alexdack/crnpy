@@ -2,6 +2,7 @@ from crnpy.crn import utils
 import numpy as np
 from pathlib import Path
 import pytest
+import crnpy 
 
 @pytest.fixture
 def csv_path():
@@ -24,11 +25,38 @@ def test_crn():
     csv_path = DATA_DIR / "test_crn.txt"
     return csv_path
 
+@pytest.fixture
+def test_crn_zero_order():
+    species =  np.array(['X_1'])
+    reaction_rates = np.array([5.7, 10.0])
+    react_stoch = np.array([[1], [0]])
+    prod_stoch = np.array([[0], [1]])
+    inits = np.array([1.0])
+    _from_arrays = {
+        "species": species,
+        "reaction_rates": reaction_rates,
+        "reaction_stoichiometry": react_stoch,
+        "product_stoichiometry":prod_stoch,
+        "initial_concentrations": inits
+    }
+    crn = crnpy.create_crn(from_arrays=_from_arrays)
+    return crn
+
 def test_open_csv(csv_path):
     np.testing.assert_array_equal(utils.open_csv(csv_path), np.array([[1., 1.]]))
 
 def test_save_crn(crn_to_save):
     assert True
+
+def test_str_convert(test_crn_zero_order):
+    TEST_DIR = Path(__file__).parent
+    DATA_DIR = TEST_DIR / "data"
+    csv_path = DATA_DIR / "test_crn_zero_order.txt"
+    s = str(test_crn_zero_order)
+    assert s == "#X_1=1.0\nX_1->,5.7\n->X_1,10.0\n"
+    test_crn_zero_order.save(csv_path)
+    crn_from_file = crnpy.create_crn(from_file={"filename": csv_path})
+    assert str(crn_from_file) == "#X_1=1.0\nX_1->,5.7\n->X_1,10.0\n"
 
 def test_read_crn_txt(test_crn):
 
